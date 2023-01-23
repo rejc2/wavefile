@@ -7,6 +7,45 @@ export = wavefile;
 
 declare module wavefile {
 
+  type FormatChunk = {
+    /** @type {string} */
+    chunkId: 'fmt ';
+    /** @type {number} */
+    chunkSize: number;
+    /** @type {number} */
+    audioFormat: number;
+    /** @type {number} */
+    numChannels: number;
+    /** @type {number} */
+    sampleRate: number;
+    /** @type {number} */
+    byteRate: number;
+    /** @type {number} */
+    blockAlign: number;
+    /** @type {number} */
+    bitsPerSample: number;
+    /** @type {number} */
+    cbSize: number;
+    /** @type {number} */
+    validBitsPerSample: number;
+    /** @type {number} */
+    dwChannelMask: number;
+    /**
+     * 4 32-bit values representing a 128-bit ID
+     * @type {!Array<number>} 
+     */
+    subformat: readonly [number,number,number,number];
+  };
+
+  type DataChunk = {
+    /** @type {string} */
+    chunkId: 'data';
+    /** @type {number} */
+    chunkSize: number;
+    /** @type {!Uint8Array} */
+    samples: Uint8Array;
+  };
+
   class WaveFile {
 
     /**
@@ -19,7 +58,7 @@ declare module wavefile {
      * 'RIFF', 'RIFX' and 'RF64' are supported.
      * @type {string}
      */
-    container: string;
+    container: 'RIFF' | 'RIFX' | 'RF64';
     /**
      * @type {number}
      */
@@ -29,12 +68,12 @@ declare module wavefile {
      * Always 'WAVE'.
      * @type {string}
      */
-    format: string;
+    format: 'WAVE';
     /**
      * The data of the 'fmt' chunk.
      * @type {!Object<string, *>}
      */
-    fmt: object;
+    fmt: FormatChunk;
     /**
      * The data of the 'fact' chunk.
      * @type {!Object<string, *>}
@@ -70,7 +109,7 @@ declare module wavefile {
      * The data of the 'data' chunk.
      * @type {!Object<string, *>}
      */
-    data: object;
+    data: DataChunk;
     /**
      * The data of the 'LIST' chunks.
      * Each item in this list look like this:
