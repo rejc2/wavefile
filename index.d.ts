@@ -47,7 +47,6 @@ declare module wavefile {
   };
 
   class WaveFile {
-
     /**
      * The bit depth code according to the samples.
      * @type {string}
@@ -95,6 +94,16 @@ declare module wavefile {
      */
     bext: object;
     /**
+     * The data of the 'mext' chunk.
+     * @type {!Object<string, *>}
+     */
+    mext: object;
+    /**
+     * The data of the 'cart' chunk.
+     * @type {!Object<string, *>}
+     */
+    cart: object;
+    /**
      * The data of the 'iXML' chunk.
      * @type {!Object<string, *>}
      */
@@ -132,6 +141,12 @@ declare module wavefile {
      * @type {!Object<string, *>}
      */
     _PMX: object;
+    /**
+     * Whether to apply a pad byte or not
+     * Defaults to 'true'
+     * @type {boolean}
+     */
+     padBytes: boolean;
 
     /**
      * @param {Uint8Array=} [wavBuffer=null] A wave file buffer.
@@ -148,7 +163,7 @@ declare module wavefile {
      * @param {Function=} [OutputObject=Float64Array] The sample container.
      * @return {!(Array|TypedArray)} the samples.
      */
-    getSamples(interleaved?:boolean, OutputObject?: Function): Float64Array;
+    getSamples(interleaved?: boolean, OutputObject?: Function): Float64Array;
 
     /**
      * Return the sample at a given index.
@@ -184,8 +199,21 @@ declare module wavefile {
       numChannels: number,
       sampleRate: number,
       bitDepthCode: string,
-      samples: Array<number>|Array<Array<number>>|ArrayLike<any>|Array<ArrayLike<any>>,
-      options?: object): void;
+      samples:
+        | Array<number>
+        | Array<Array<number>>
+        | ArrayLike<any>
+        | Array<ArrayLike<any>>,
+      options?: object
+    ): void;
+
+    /**
+     * Set up the WaveFileCreator object from an mpeg buffer and/or optional info.
+     * @param {!Uint8Array} mpegBuffer The buffer.
+     * @param {Object=} info Optional Mpeg info such as version, layer,  etc.
+     * @throws {Error} If the mpeg file cannot be parsed
+     */
+    fromMpeg(mpegBuffer: Uint8Array, info?: object): void;
 
     /**
      * Set up the WaveFileParser object from a byte buffer.
@@ -196,7 +224,7 @@ declare module wavefile {
      * @throws {Error} If no 'fmt ' chunk is found.
      * @throws {Error} If no 'data' chunk is found.
      */
-    fromBuffer(bytes: Uint8Array, samples?:boolean): void;
+    fromBuffer(bytes: Uint8Array, samples?: boolean): void;
 
     /**
      * Return a byte buffer representig the WaveFileParser object as a .wav file.
@@ -262,7 +290,7 @@ declare module wavefile {
      * @param {number} sampleRate The target sample rate.
      * @param {Object=} options The extra configuration, if needed.
      */
-    toSampleRate(samples: number, options?:object): void;
+    toSampleRate(samples: number, options?: object): void;
 
     /**
      * Encode a 16-bit wave file as 4-bit IMA ADPCM.
@@ -316,7 +344,7 @@ declare module wavefile {
      * @param {string} tag The tag name.
      * @return {?string} The value if the tag is found, null otherwise.
      */
-    getTag(tag: string): string|null;
+    getTag(tag: string): string | null;
 
     /**
      * Return a Object<tag, value> with the RIFF tags in the file.
